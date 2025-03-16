@@ -1,0 +1,10 @@
+[package]
+name = "lsp"
+version = "0.1.0"
+edition = "2024"
+authors = ["Tamzeed Quazi", "Diego Armstrong"]
+description = "LSP server for StyleSense, a VSCode extension for real-time code style enforcement."
+
+
+
+[dependencies]
