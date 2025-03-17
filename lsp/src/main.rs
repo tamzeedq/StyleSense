@@ -1,3 +1,14 @@
+mod parser;
+
 fn main() {
-    println!("Hello, LSP!");
+    let code = r#"
+    #include <stdio.h>
+
+    int main() {
+        printf("Hello World"!)
+        return 0;
+    }
+    "#;
+
+    parser::parse_code(code, "c");
 }
