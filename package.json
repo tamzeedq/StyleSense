@@ -10,7 +10,7 @@
     "Other"
   ],
   "activationEvents": [],
-  "main": "./out/extension.js",
+  "main": "./extension/out/extension.js",
   "contributes": {
     "commands": [
       {
