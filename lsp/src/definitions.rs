@@ -5,7 +5,6 @@ unsafe extern "C" {
     fn tree_sitter_cpp() -> Language;
 }
 
-#[non_exhaustive]
 pub enum SupportedLanguageE {
     LangC,
     LangCPP,
@@ -20,11 +19,10 @@ pub enum SupportedLanguageE {
  * @return      Err if mapping was not successful.
  */
 impl SupportedLanguageE {
-    pub fn to_parser_language(self) -> Result<Language, String> {
+    pub fn to_parser_language(self) -> Language {
         match self {
-            SupportedLanguageE::LangC => Ok(unsafe { tree_sitter_c() }),
-            SupportedLanguageE::LangCPP => Ok(unsafe { tree_sitter_cpp() }),
-            _ => Err("Unsupported language".to_string()),
+            SupportedLanguageE::LangC => unsafe { tree_sitter_c() },
+            SupportedLanguageE::LangCPP => unsafe { tree_sitter_cpp() },
         }
     }
 }

@@ -10,7 +10,7 @@ use tree_sitter::*;
  */
 pub fn get_syntax_tree(source_code: &str, language: SupportedLanguageE) -> Result<Tree, String> {
     let mut parser = Parser::new();
-    let parser_language = language.to_parser_language().unwrap();
+    let parser_language = language.to_parser_language();
 
     parser.set_language(&parser_language)
         .expect("Failed to load parser language object.");
