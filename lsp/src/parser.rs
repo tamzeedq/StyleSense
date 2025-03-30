@@ -1,22 +1,22 @@
-use tree_sitter::{Parser, Language};
+use crate::definitions::*;
+use tree_sitter::*;
 
-// Load Tree-sitter C/C++ grammars
-unsafe extern "C" {
-    fn tree_sitter_c() -> Language;
-    fn tree_sitter_cpp() -> Language;
-}
-
-pub fn parse_code(source_code: &str, language: &str) {
+/*
+ * @brief       Retrieves the tree of provided source code.
+ * 
+ * @param[in]   source_code     The source code to retrieve nodes from.
+ * @param[in]   language        The language of the source code.
+ *    
+ */
+pub fn get_syntax_tree(source_code: &str, language: SupportedLanguageE) -> Result<Tree, String> {
     let mut parser = Parser::new();
+    let parser_language = language.to_parser_language().unwrap();
 
-    let language = match language {
-        "c" => unsafe { tree_sitter_c() },
-        "cpp" => unsafe { tree_sitter_cpp() },
-        _ => panic!("Unsupported language"),
-    };
+    parser.set_language(&parser_language)
+        .expect("Failed to load parser language object.");
 
-    parser.set_language(&language).expect("Failed to load parser");
+    let tree = parser.parse(source_code, None)
+        .ok_or("Failed to parse source code.")?;
 
-    let tree = parser.parse(source_code, None).expect("Failed to parse code");
-    println!("{:#?}", tree.root_node());
+    Ok(tree)
 }
