@@ -5,6 +5,10 @@ edition = "2024"
 authors = ["Tamzeed Quazi", "Diego Armstrong"]
 description = "LSP server for StyleSense, a VSCode extension for real-time code style enforcement."
 
-
+[build-dependencies]
+cc="*"
 
 [dependencies]
+tree-sitter = "0.24"
+tree-sitter-c = "0.23"
+tree-sitter-cpp = "0.23"

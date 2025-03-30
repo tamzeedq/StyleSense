@@ -1,0 +1,63 @@
+# Ignore Rust build files
+/lsp/target/
+lsp/target/
+lsp/target/debug
+lsp/build/
+lsp/*.o
+lsp/*.so
+lsp/*.a
+lsp/*.rlib
+lsp/*.d
+
+# Ignore Rust dependency lock file (if a library)
+lsp/Cargo.lock
+
+# Ignore Rust IDE files
+/.vscode/
+/lsp/.idea/
+/lsp/.DS_Store/
+/lsp/*.log
+
+# Ignore VSCode Extension build files
+/node_modules/
+/out/
+/extension/dist/
+/extension/*.tsbuildinfo
+
+# Ignore VSCode Extension package lock
+package-lock.json
+
+# Ignore Rust build files
+/lsp/target/
+lsp/target/
+lsp/build/
+lsp/*.o
+lsp/*.so
+lsp/*.a
+lsp/*.rlib
+lsp/*.d
+
+# Ignore Rust dependency lock file (if a library)
+lsp/Cargo.lock
+
+# Ignore Rust IDE files
+/.vscode/
+/lsp/.idea/
+/lsp/.DS_Store/
+/lsp/*.log
+
+# Ignore VSCode Extension build files
+/node_modules/
+/out/
+/extension/dist/
+/extension/*.tsbuildinfo
+
+# Ignore VSCode Extension package lock
+package-lock.json
+
+# Ignore temporary files
+*.swp
+*.swo
+*.bak
+*.tmp
+
