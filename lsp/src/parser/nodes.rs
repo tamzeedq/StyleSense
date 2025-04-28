@@ -31,7 +31,7 @@ pub fn retrieve_nodes_by_kind<'a>(root: Node<'a>, requested_kind: &str) -> Vec<N
     nodes
 }
 
-/// @brief       Retrieves the function definitions within the source code.
+/// Retrieves the function definitions within the source code.
 ///
 /// # Arguments
 ///
@@ -44,7 +44,7 @@ pub fn retrieve_function_definitions<'a>(root: Node<'a>) -> Vec<Node<'a>> {
     retrieve_nodes_by_kind(root, "function_definition")
 }
 
-/// @brief       Retrieves the variables within the source code.
+/// Retrieves the variables within the source code.
 ///
 /// # Arguments
 ///
@@ -57,7 +57,7 @@ pub fn retrieve_variables<'a>(root: Node<'a>) -> Vec<Node<'a>> {
     retrieve_nodes_by_kind(root, "declaration")
 }
 
-/// @brief       Retrieves the if statements within the source code.
+/// Retrieves the if statements within the source code.
 ///
 /// # Arguments
 ///
@@ -70,7 +70,7 @@ pub fn retrieve_if_statements<'a>(root: Node<'a>) -> Vec<Node<'a>> {
     retrieve_nodes_by_kind(root, "if_statement")
 }
 
-/// @brief       Retrieves the while statements within the source code.
+/// Retrieves the while statements within the source code.
 ///
 /// # Arguments
 ///
@@ -83,7 +83,7 @@ pub fn retrieve_while_statements<'a>(root: Node<'a>) -> Vec<Node<'a>> {
     retrieve_nodes_by_kind(root, "while_statement")
 }
 
-/// @brief       Retrieves the for statements within the source code.
+/// Retrieves the for statements within the source code.
 ///
 /// # Arguments
 ///
@@ -96,7 +96,7 @@ pub fn retrieve_for_statements<'a>(root: Node<'a>) -> Vec<Node<'a>> {
     retrieve_nodes_by_kind(root, "for_statement")
 }
 
-/// @brief       Retrieves the assignment expressions within the source code.
+/// Retrieves the assignment expressions within the source code.
 ///
 /// # Arguments
 ///
@@ -109,7 +109,7 @@ pub fn retrieve_assignment_expressions<'a>(root: Node<'a>) -> Vec<Node<'a>> {
     retrieve_nodes_by_kind(root, "assignment_expression")
 }
 
-/// @brief       Retrieves the return statements within the source code.
+/// Retrieves the return statements within the source code.
 ///
 /// # Arguments
 ///
@@ -122,7 +122,7 @@ pub fn retrieve_return_statements<'a>(root: Node<'a>) -> Vec<Node<'a>> {
     retrieve_nodes_by_kind(root, "return_statement")
 }
 
-/// @brief       Retrieves the binary expressions within the source code.
+/// Retrieves the binary expressions within the source code.
 ///
 /// # Arguments
 ///
@@ -135,7 +135,7 @@ pub fn retrieve_binary_expressions<'a>(root: Node<'a>) -> Vec<Node<'a>> {
     retrieve_nodes_by_kind(root, "binary_expression")
 }
 
-/// @brief       Retrieves the unary expressions within the source code.
+/// Retrieves the unary expressions within the source code.
 ///
 /// # Arguments
 ///
@@ -148,7 +148,7 @@ pub fn retrieve_unary_expressions<'a>(root: Node<'a>) -> Vec<Node<'a>> {
     retrieve_nodes_by_kind(root, "unary_expression")
 }
 
-/// @brief       Retrieves the function call expressions within the source code.
+/// Retrieves the function call expressions within the source code.
 ///
 /// # Arguments
 ///
@@ -161,7 +161,7 @@ pub fn retrieve_function_calls<'a>(root: Node<'a>) -> Vec<Node<'a>> {
     retrieve_nodes_by_kind(root, "call_expression")
 }
 
-/// @brief       Retrieves the struct definitions within the source code.
+/// Retrieves the struct definitions within the source code.
 ///
 /// # Arguments
 ///
@@ -174,7 +174,7 @@ pub fn retrieve_struct_definitions<'a>(root: Node<'a>) -> Vec<Node<'a>> {
     retrieve_nodes_by_kind(root, "struct_specifier")
 }
 
-/// @brief       Retrieves the enum definitions within the source code.
+/// Retrieves the enum definitions within the source code.
 ///
 /// # Arguments
 ///
@@ -187,7 +187,7 @@ pub fn retrieve_enum_definitions<'a>(root: Node<'a>) -> Vec<Node<'a>> {
     retrieve_nodes_by_kind(root, "enum_specifier")
 }
 
-/// @brief       Retrieves all comments within the source code.
+/// Retrieves all comments within the source code.
 ///
 /// # Arguments
 ///
@@ -200,7 +200,7 @@ pub fn retrieve_comments<'a>(root: Node<'a>) -> Vec<Node<'a>> {
     retrieve_nodes_by_kind(root, "comment")
 }
 
-/// @brief       Retrieves preprocessor defines within the source code.
+/// Retrieves preprocessor defines within the source code.
 ///
 /// # Arguments
 ///
@@ -213,7 +213,7 @@ pub fn retrieve_preprocessor_defines<'a>(root: Node<'a>) -> Vec<Node<'a>> {
     retrieve_nodes_by_kind(root, "preproc_def")
 }
 
-/// @brief       Retrieves preprocessor includes within the source code.
+/// Retrieves preprocessor includes within the source code.
 ///
 /// # Arguments
 ///
