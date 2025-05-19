@@ -23,6 +23,7 @@ lsp/Cargo.lock
 /out/
 /extension/dist/
 /extension/*.tsbuildinfo
+.vscode-test/
 
 # Ignore VSCode Extension package lock
 package-lock.json

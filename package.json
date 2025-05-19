@@ -5,37 +5,62 @@
   "version": "0.0.1",
   "engines": {
     "vscode": "^1.98.0"
-  },
-  "categories": [
-    "Other"
+  },  "categories": [
+    "Other",
+    "Linters",
+    "Formatters"
   ],
-  "activationEvents": [],
-  "main": "./extension/out/extension.js",
-  "contributes": {
+  "activationEvents": [
+    "onLanguage:cpp",
+    "onLanguage:c"
+  ],
+  "main": "./extension/out/extension.js",  "contributes": {
     "commands": [
       {
         "command": "stylesense.helloWorld",
-        "title": "Hello World"
+        "title": "StyleSense: Hello World"
       }
-    ]
-  },
-  "scripts": {
+    ],
+    "configuration": {
+      "type": "object",
+      "title": "StyleSense",
+      "properties": {
+        "stylesense.trace.server": {
+          "type": "string",
+          "enum": ["off", "messages", "verbose"],
+          "default": "off",
+          "description": "Controls the verbosity of the StyleSense language server trace."
+        },
+        "stylesense.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Controls whether StyleSense is enabled."
+        }
+      }
+    }
+  },"scripts": {
     "vscode:prepublish": "npm run compile",
     "compile": "tsc -p ./",
     "watch": "tsc -watch -p ./",
     "pretest": "npm run compile && npm run lint",
-    "lint": "eslint src",
-    "test": "vscode-test"
+    "lint": "eslint extension/src",
+    "test": "node ./extension/out/test/runTest.js"
   },
   "devDependencies": {
-    "@types/vscode": "^1.98.0",
+    "@types/glob": "^8.1.0",
     "@types/mocha": "^10.0.10",
     "@types/node": "20.x",
+    "@types/vscode": "^1.98.0",
     "@typescript-eslint/eslint-plugin": "^8.25.0",
     "@typescript-eslint/parser": "^8.25.0",
-    "eslint": "^9.21.0",
-    "typescript": "^5.7.3",
     "@vscode/test-cli": "^0.0.10",
-    "@vscode/test-electron": "^2.4.1"
+    "@vscode/test-electron": "^2.4.1",
+    "eslint": "^9.21.0",
+    "glob": "^8.1.0",
+    "mocha": "^11.3.0",
+    "typescript": "^5.7.3"
+  },
+  "dependencies": {
+    "vscode-languageclient": "^9.0.1"
   }
 }

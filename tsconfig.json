@@ -1,6 +1,5 @@
-{
-	"compilerOptions": {
-		"module": "Node16",
+{	"compilerOptions": {
+		"module": "CommonJS",
 		"target": "ES2022",
 		"outDir": "extension/out",
 		"lib": [
@@ -9,9 +8,8 @@
 		"sourceMap": true,
 		"rootDir": "extension",
 		"strict": true,   /* enable all strict type-checking options */
-		/* Additional Checks */
-		// "noImplicitReturns": true, /* Report error when not all code paths in function return a value. */
-		// "noFallthroughCasesInSwitch": true, /* Report errors for fallthrough cases in switch statement. */
-		// "noUnusedParameters": true,  /* Report errors on unused parameters. */
+		"esModuleInterop": true,  /* Enables emit interoperability between CommonJS and ES Modules */
+		"skipLibCheck": true,     /* Skip type checking of declaration files */
+		"forceConsistentCasingInFileNames": true /* Disallow inconsistently-cased references to the same file */
 	}
 }

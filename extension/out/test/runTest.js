@@ -33,28 +33,27 @@ var __importStar = (this && this.__importStar) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-const assert = __importStar(require("assert"));
-const vscode = __importStar(require("vscode"));
-suite('StyleSense Extension Tests', () => {
-    vscode.window.showInformationMessage('Starting StyleSense tests');
-    // Basic test to ensure the extension is loaded
-    test('Extension should be present', () => {
-        // Extension ID might be publisher.name or just name during development
-        const extension = vscode.extensions.getExtension('undefined_publisher.stylesense') ||
-            vscode.extensions.getExtension('stylesense');
-        assert.ok(extension, 'StyleSense extension should be available');
-    });
-    // Basic test that doesn't depend on opening a file
-    test('Basic extension functionality', () => {
-        // Just check that we can access vscode APIs
-        assert.ok(vscode.workspace, 'Workspace API should be available');
-        assert.ok(vscode.window, 'Window API should be available');
-        assert.ok(true, 'Extension basic functionality test passed');
-    });
-    // Test the command functionality without checking actual registration
-    test('Command functionality test', () => {
-        // This test just verifies that the command-related code doesn't throw errors
-        assert.ok(true, 'Command functionality test passed');
-    });
-});
-//# sourceMappingURL=extension.test.js.map
+const path = __importStar(require("path"));
+const test_electron_1 = require("@vscode/test-electron");
+async function main() {
+    try {
+        // The folder containing the Extension Manifest package.json
+        // Passed to `--extensionDevelopmentPath`
+        const extensionDevelopmentPath = path.resolve(__dirname, '../../../');
+        // The path to the extension test runner script
+        // Passed to --extensionTestsPath
+        const extensionTestsPath = path.resolve(__dirname, './suite/index');
+        // Download VS Code, unzip it and run the integration test
+        await (0, test_electron_1.runTests)({
+            extensionDevelopmentPath,
+            extensionTestsPath,
+            launchArgs: ['--disable-extensions']
+        });
+    }
+    catch (err) {
+        console.error('Failed to run tests:', err);
+        process.exit(1);
+    }
+}
+main();
+//# sourceMappingURL=runTest.js.map

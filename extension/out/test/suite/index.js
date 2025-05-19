@@ -32,29 +32,43 @@ var __importStar = (this && this.__importStar) || (function () {
         return result;
     };
 })();
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-const assert = __importStar(require("assert"));
-const vscode = __importStar(require("vscode"));
-suite('StyleSense Extension Tests', () => {
-    vscode.window.showInformationMessage('Starting StyleSense tests');
-    // Basic test to ensure the extension is loaded
-    test('Extension should be present', () => {
-        // Extension ID might be publisher.name or just name during development
-        const extension = vscode.extensions.getExtension('undefined_publisher.stylesense') ||
-            vscode.extensions.getExtension('stylesense');
-        assert.ok(extension, 'StyleSense extension should be available');
+exports.run = run;
+const path = __importStar(require("path"));
+const mocha_1 = __importDefault(require("mocha"));
+const glob_1 = __importDefault(require("glob"));
+function run() {
+    // Create the mocha test
+    const mocha = new mocha_1.default({
+        ui: 'tdd',
+        color: true
     });
-    // Basic test that doesn't depend on opening a file
-    test('Basic extension functionality', () => {
-        // Just check that we can access vscode APIs
-        assert.ok(vscode.workspace, 'Workspace API should be available');
-        assert.ok(vscode.window, 'Window API should be available');
-        assert.ok(true, 'Extension basic functionality test passed');
+    const testsRoot = path.resolve(__dirname, '..');
+    return new Promise((resolve, reject) => {
+        (0, glob_1.default)('**/**.test.js', { cwd: testsRoot }, (err, files) => {
+            if (err) {
+                return reject(err);
+            }
+            // Add files to the test suite
+            files.forEach((f) => mocha.addFile(path.resolve(testsRoot, f)));
+            try {
+                // Run the mocha test
+                mocha.run((failures) => {
+                    if (failures > 0) {
+                        reject(new Error(`${failures} tests failed.`));
+                    }
+                    else {
+                        resolve();
+                    }
+                });
+            }
+            catch (err) {
+                reject(err);
+            }
+        });
     });
-    // Test the command functionality without checking actual registration
-    test('Command functionality test', () => {
-        // This test just verifies that the command-related code doesn't throw errors
-        assert.ok(true, 'Command functionality test passed');
-    });
-});
-//# sourceMappingURL=extension.test.js.map
+}
+//# sourceMappingURL=index.js.map

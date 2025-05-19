@@ -1,26 +1,58 @@
-// The module 'vscode' contains the VS Code extensibility API
-// Import the module and reference it with the alias vscode in your code below
-import * as vscode from 'vscode';
+import * as path from 'path';
+import {
+    ExtensionContext,
+    window,
+    commands,
+    workspace
+} from 'vscode';
+
+import { 
+    LanguageClient, 
+    LanguageClientOptions, 
+    ServerOptions 
+} from 'vscode-languageclient/node';
+
+// Single instance of the language client
+let client: LanguageClient;
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
-export function activate(context: vscode.ExtensionContext) {
+export function activate(context: ExtensionContext) {
+    // Register the hello world command for testing
+    let disposable = commands.registerCommand('stylesense.helloWorld', () => {
+        window.showInformationMessage('Hello from StyleSense!');
+    });
+    
+    context.subscriptions.push(disposable);
+    
+    // Server options - specify how to launch the server
+    const serverOptions: ServerOptions = {
+        command: path.join(__dirname, '..', '..', 'lsp', 'target', 'debug', 'lsp'),
+        options: { shell: true }
+    };
 
-	// Use the console to output diagnostic information (console.log) and errors (console.error)
-	// This line of code will only be executed once when your extension is activated
-	console.log('Congratulations, your extension "stylesense" is now active!');
-
-	// The command has been defined in the package.json file
-	// Now provide the implementation of the command with registerCommand
-	// The commandId parameter must match the command field in package.json
-	const disposable = vscode.commands.registerCommand('stylesense.helloWorld', () => {
-		// The code you place here will be executed every time your command is executed
-		// Display a message box to the user
-		vscode.window.showInformationMessage('Hello World from StyleSense!');
-	});
-
-	context.subscriptions.push(disposable);
+    // Client options - define the languages to handle
+    const clientOptions: LanguageClientOptions = {
+        documentSelector: [{ scheme: 'file', language: 'cpp' }, { scheme: 'file', language: 'c' }],
+    };    // Create and start the client
+    client = new LanguageClient(
+        'stylesense',
+        'StyleSense',
+        serverOptions,
+        {
+            ...clientOptions,
+            outputChannel: window.createOutputChannel('StyleSense Language Server')
+        }
+    );
+    
+    // Start the client
+    client.start();
+    
+    // Push the disposable to the context's subscriptions
+    context.subscriptions.push(client);
 }
 
 // This method is called when your extension is deactivated
-export function deactivate() {}
+export function deactivate(): Thenable<void> | undefined {
+    return client ? client.stop() : undefined;
+}
