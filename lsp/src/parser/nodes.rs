@@ -1,34 +1,74 @@
+use tree_sitter::{Node, TreeCursor};
+
+/// Retrieves the number of ASCII space characters between the closing
+/// parenthesis of a `while` statement and the opening `{` of its body.
 ///
-/// MODULE DETAILS
-/// 
-/// # Purpose
-/// 
-/// * Retrieve key nodes from source code.
-/// * Retrieve parsing-critical info on said key nodes.
+/// # Arguments
+///
+/// * `while_node` - The `while_statement` node to inspect.
+/// * `source_code` - The full source code as a byte slice.
+///
+/// # Returns
+///
+/// `Some(count)` with the number of spaces, or `None` if structure is unexpected.
+pub fn get_space_between_condition_and_body<'a>(node: Node<'a>, source_code: &'a [u8],) -> Option<usize> {
+    let mut cursor:TreeCursor = node.walk();
+    let mut condition_end:Option<usize> = None;
+    let mut body_start:Option<usize> = None;
 
-use tree_sitter::Node;
+    /* Retrieve the closing parenthesis and opening curly brace. */
+    for child in node.children(&mut cursor) {
+        if child.kind() == "parenthesized_expression" {
+            condition_end = Some(child.end_byte());
+        } else if child.kind() == "compound_statement" {
+            body_start = Some(child.start_byte());
+        }
+    }
 
-/// Retrieves all nodes of the provided kind.
+    /* Count the spaces between the closing parenthesis and opening curly brace. */
+    match (condition_end, body_start) {
+        (Some(end), Some(start)) if end < start => {
+
+            /* Grab a slice of bytes respresenting the. */
+            let gap = &source_code[end..start];
+
+            /* Count the spaces within the gap. */
+            let space_count = gap
+                .iter()
+                .filter(|byte_ref| **byte_ref == b' ')
+                .count();
+
+            Some(space_count)
+        }
+        _ => None,
+    }
+}
+
+/// Recursively retrieves all nodes of the provided kind.
 /// 
 /// # Arguments
 /// 
-/// * 'root' -              The root node. 
+/// * 'node' -              The provided starting node. 
 /// * 'requested_kind' -    The kind of node to retrieve all instances of.      
 /// 
 /// # Returns
 /// 
 /// A vector containing all instances of the specified kind.
-pub fn retrieve_nodes_by_kind<'a>(root: Node<'a>, requested_kind: &str) -> Vec<Node<'a>> {
-    let mut nodes = Vec::new();
-    let mut cursor = root.walk();
+pub fn retrieve_nodes_by_kind<'a>(node: Node<'a>, requested_kind: &str) -> Vec<Node<'a>> {
+    let mut requested_nodes:Vec<Node<'a>> = Vec::new();
+    let mut cursor:TreeCursor<'a> = node.walk();
 
-    for child in root.children(&mut cursor) {
-        if child.kind() == requested_kind {
-            nodes.push(child);
-        }
+    /* Push the current node if it is of the requested kind. */
+    if node.kind() == requested_kind {
+        requested_nodes.push(node);
     }
 
-    nodes
+    /* Recursively check each child node for its child nodes. */
+    for child in node.children(&mut cursor) {
+        requested_nodes.extend(retrieve_nodes_by_kind(child, requested_kind) );
+    }
+
+    requested_nodes
 }
 
 /// Retrieves the function definitions within the source code.
@@ -96,19 +136,6 @@ pub fn retrieve_for_statements<'a>(root: Node<'a>) -> Vec<Node<'a>> {
     retrieve_nodes_by_kind(root, "for_statement")
 }
 
-/// Retrieves the assignment expressions within the source code.
-///
-/// # Arguments
-///
-/// * `root` - The root node.
-///
-/// # Returns
-///
-/// A vector containing all assignment expression nodes.
-pub fn retrieve_assignment_expressions<'a>(root: Node<'a>) -> Vec<Node<'a>> {
-    retrieve_nodes_by_kind(root, "assignment_expression")
-}
-
 /// Retrieves the return statements within the source code.
 ///
 /// # Arguments
@@ -122,31 +149,6 @@ pub fn retrieve_return_statements<'a>(root: Node<'a>) -> Vec<Node<'a>> {
     retrieve_nodes_by_kind(root, "return_statement")
 }
 
-/// Retrieves the binary expressions within the source code.
-///
-/// # Arguments
-///
-/// * `root` - The root node.
-///
-/// # Returns
-///
-/// A vector containing all binary expression nodes.
-pub fn retrieve_binary_expressions<'a>(root: Node<'a>) -> Vec<Node<'a>> {
-    retrieve_nodes_by_kind(root, "binary_expression")
-}
-
-/// Retrieves the unary expressions within the source code.
-///
-/// # Arguments
-///
-/// * `root` - The root node.
-///
-/// # Returns
-///
-/// A vector containing all unary expression nodes.
-pub fn retrieve_unary_expressions<'a>(root: Node<'a>) -> Vec<Node<'a>> {
-    retrieve_nodes_by_kind(root, "unary_expression")
-}
 
 /// Retrieves the function call expressions within the source code.
 ///
