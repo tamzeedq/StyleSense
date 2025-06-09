@@ -1,13 +1,16 @@
-use crate::definitions::*;
 use tree_sitter::*;
+use crate::definitions::types::*;
 
-/*
- * @brief       Retrieves the tree of provided source code.
- * 
- * @param[in]   source_code     The source code to retrieve nodes from.
- * @param[in]   language        The language of the source code.
- *    
- */
+/// Retrieves the tree of provided source code.
+/// 
+/// # Arguments
+/// 
+/// * 'source_code'     The source code to retrieve a tree from. 
+/// * 'language'        The language that the source code is in.
+/// 
+/// # Returns
+/// 
+/// An AST (Abstract Syntax Tree) of the provided source code.
 pub fn get_syntax_tree(source_code: &str, language: SupportedLanguageE) -> Result<Tree, String> {
     let mut parser = Parser::new();
     let parser_language = language.to_parser_language();
