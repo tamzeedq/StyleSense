@@ -29,7 +29,7 @@ pub fn get_space_between_condition_and_body<'a>(node: Node<'a>, source_code: &'a
     match (condition_end, body_start) {
         (Some(end), Some(start)) if end < start => {
 
-            /* Grab a slice of bytes respresenting the. */
+            /* Grab a slice of bytes respresenting the gap between the end of condition and start of body. */
             let gap = &source_code[end..start];
 
             /* Count the spaces within the gap. */
