@@ -5,7 +5,15 @@
 	},
 	"search.exclude": {
 		"out": true // set this to false to include "out" folder in search results
+	},	// Turn off tsc task auto detection since we have the necessary tasks as npm scripts
+	"typescript.tsc.autoDetect": "off",
+	// Disable test discovery to prevent getTestableNode errors
+	"test.discovery.enabled": false,
+	"typescript.preferences.includePackageJsonAutoImports": "off",
+	"typescript.suggest.autoImports": false,
+	// Exclude test files from being processed during development
+	"files.associations": {
+		"*.test.ts": "plaintext"
 	},
-	// Turn off tsc task auto detection since we have the necessary tasks as npm scripts
-	"typescript.tsc.autoDetect": "off"
+	"typescript.preferences.includeCompletionsWithSnippetSyntax": false
 }

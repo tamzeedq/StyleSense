@@ -1,4 +1,4 @@
 fn main() {
-    println!("cargo:rustc-link-lib=static=tree-sitter-c");
-    println!("cargo:rustc-link-lib=static=tree-sitter-cpp");
+    // The tree-sitter-c and tree-sitter-cpp crates should handle C library compilation
+    println!("cargo:rerun-if-changed=build.rs");
 }

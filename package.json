@@ -9,12 +9,12 @@
     "Other",
     "Linters",
     "Formatters"
-  ],
-  "activationEvents": [
+  ],  "activationEvents": [
     "onLanguage:cpp",
     "onLanguage:c"
   ],
-  "main": "./extension/out/extension.js",  "contributes": {
+  "main": "./extension/out/src/extension.js",
+  "contributes": {
     "commands": [
       {
         "command": "stylesense.helloWorld",

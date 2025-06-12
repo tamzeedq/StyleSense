@@ -1,10 +1,6 @@
 use tree_sitter::*;
-
-// The tree sitter grammar's for the supported languages.
-unsafe extern "C" {
-    fn tree_sitter_c() -> Language;
-    fn tree_sitter_cpp() -> Language;
-}
+extern crate tree_sitter_c;
+extern crate tree_sitter_cpp;
 
 /// An enum describing the languages supported by StyleSense.
 pub enum SupportedLanguageE {
@@ -20,8 +16,8 @@ pub enum SupportedLanguageE {
 impl SupportedLanguageE {
     pub fn to_parser_language(self) -> Language {
         match self {
-            SupportedLanguageE::LangC => unsafe { tree_sitter_c() },
-            SupportedLanguageE::LangCPP => unsafe { tree_sitter_cpp() },
+            SupportedLanguageE::LangC => tree_sitter_c::LANGUAGE.into(),
+            SupportedLanguageE::LangCPP => tree_sitter_cpp::LANGUAGE.into(),
         }
     }
 }
