@@ -131,11 +131,13 @@ impl Backend {
 }
 
 #[tower_lsp::async_trait]
-impl LanguageServer for Backend {    async fn initialize(&self, _: InitializeParams) -> Result<InitializeResult> {
+impl LanguageServer for Backend {    
+    
+    async fn initialize(&self, _: InitializeParams) -> Result<InitializeResult> {
         Ok(InitializeResult {
             capabilities: ServerCapabilities {
                 text_document_sync: Some(TextDocumentSyncCapability::Kind(
-                    TextDocumentSyncKind::FULL,
+                    TextDocumentSyncKind::FULL, // will need to change document sync from full to incremental later
                 )),
                 // We'll add more capabilities as needed later
                 ..Default::default()
@@ -148,13 +150,17 @@ impl LanguageServer for Backend {    async fn initialize(&self, _: InitializePar
         self.client
             .log_message(MessageType::INFO, "StyleSense server initialized!")
             .await;
-    }    async fn did_open(&self, params: DidOpenTextDocumentParams) {
+    }    
+    
+    async fn did_open(&self, params: DidOpenTextDocumentParams) {
         let uri = params.text_document.uri;
         let text = params.text_document.text;
         let language_id = &params.text_document.language_id;
         
         self.analyze_document(uri, &text, language_id).await;
-    }    async fn did_change(&self, params: DidChangeTextDocumentParams) {
+    }    
+    
+    async fn did_change(&self, params: DidChangeTextDocumentParams) {
         let uri = params.text_document.uri.clone();
         
         // Get the language ID from the URI extension
