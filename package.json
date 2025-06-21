@@ -13,14 +13,7 @@
     "onLanguage:cpp",
     "onLanguage:c"
   ],
-  "main": "./extension/out/src/extension.js",
-  "contributes": {
-    "commands": [
-      {
-        "command": "stylesense.helloWorld",
-        "title": "StyleSense: Hello World"
-      }
-    ],
+  "main": "./extension/out/src/extension.js",  "contributes": {
     "configuration": {
       "type": "object",
       "title": "StyleSense",
