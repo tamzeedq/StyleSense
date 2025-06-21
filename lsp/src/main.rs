@@ -1,11 +1,13 @@
 use tower_lsp::{LspService, Server};
 use tower_lsp::jsonrpc::Result;
 use tower_lsp::lsp_types::{
+    CodeAction, CodeActionKind, CodeActionOptions, CodeActionOrCommand, CodeActionParams, CodeActionResponse,
     Diagnostic, DiagnosticSeverity, DidChangeTextDocumentParams, 
     DidOpenTextDocumentParams, InitializeParams, InitializeResult, InitializedParams,
     Position, Range, ServerCapabilities, TextDocumentSyncCapability, 
-    TextDocumentSyncKind, Url,
+    TextDocumentSyncKind, TextEdit, Url, WorkspaceEdit,
 };
+use std::collections::HashMap;
 use tower_lsp::Client;
 use tower_lsp::LanguageServer;
 
@@ -20,7 +22,74 @@ struct Backend {
     client: Client,
 }
 
-impl Backend {    /// Analyzes a document and publishes diagnostics
+impl Backend {
+    /// Creates a code action to fix a specific diagnostic
+    async fn create_fix_action(&self, uri: &Url, diagnostic: &Diagnostic) -> Option<CodeAction> {
+        let title = match diagnostic.message.as_str() {
+            "Missing space before '='" => "Add space before '='",
+            "Missing space after '='" => "Add space after '='",
+            _ => return None,
+        };
+
+        let edit = self.create_text_edit_for_diagnostic(diagnostic)?;
+        
+        let mut changes = HashMap::new();
+        changes.insert(uri.clone(), vec![edit]);
+        
+        let workspace_edit = WorkspaceEdit {
+            changes: Some(changes),
+            ..Default::default()
+        };
+
+        Some(CodeAction {
+            title: title.to_string(),
+            kind: Some(CodeActionKind::QUICKFIX),
+            diagnostics: Some(vec![diagnostic.clone()]),
+            edit: Some(workspace_edit),
+            is_preferred: Some(true),
+            ..Default::default()
+        })
+    }    /// Creates the appropriate text edit for a diagnostic
+    fn create_text_edit_for_diagnostic(&self, diagnostic: &Diagnostic) -> Option<TextEdit> {
+        match diagnostic.message.as_str() {
+            "Missing space before '='" => {
+                // Insert a space right before the '=' character
+                // diagnostic.range.start points to the character before '=', so '=' is at start + 1
+                Some(TextEdit {
+                    range: Range {
+                        start: Position {
+                            line: diagnostic.range.start.line,
+                            character: diagnostic.range.start.character + 1, // Position of the '=' character
+                        },
+                        end: Position {
+                            line: diagnostic.range.start.line,
+                            character: diagnostic.range.start.character + 1, // Same position for insertion
+                        },
+                    },
+                    new_text: " ".to_string(),
+                })
+            }
+            "Missing space after '='" => {
+                // Insert a space after the '=' character
+                Some(TextEdit {
+                    range: Range {
+                        start: Position {
+                            line: diagnostic.range.start.line,
+                            character: diagnostic.range.start.character + 1,
+                        },
+                        end: Position {
+                            line: diagnostic.range.start.line,
+                            character: diagnostic.range.start.character + 1,
+                        },
+                    },
+                    new_text: " ".to_string(),
+                })
+            }
+            _ => None,
+        }
+    }
+
+    /// Analyzes a document and publishes diagnostics
     async fn analyze_document(&self, uri: Url, text: &str, language_id: &str) {
         // Determine the language
         let language = match language_id {
@@ -82,19 +151,25 @@ impl Backend {    /// Analyzes a document and publishes diagnostics
 
 #[tower_lsp::async_trait]
 impl LanguageServer for Backend {    
-    
-    async fn initialize(&self, _: InitializeParams) -> Result<InitializeResult> {
+      async fn initialize(&self, _: InitializeParams) -> Result<InitializeResult> {
         Ok(InitializeResult {
             capabilities: ServerCapabilities {
                 text_document_sync: Some(TextDocumentSyncCapability::Kind(
                     TextDocumentSyncKind::FULL, // will need to change document sync from full to incremental later
+                )),
+                code_action_provider: Some(tower_lsp::lsp_types::CodeActionProviderCapability::Options(
+                    CodeActionOptions {
+                        code_action_kinds: Some(vec![CodeActionKind::QUICKFIX]),
+                        work_done_progress_options: Default::default(),
+                        resolve_provider: Some(false),
+                    }
                 )),
                 // We'll add more capabilities as needed later
                 ..Default::default()
             },
             ..Default::default()
         })
-    }    async fn initialized(&self, _: InitializedParams) {
+    }async fn initialized(&self, _: InitializedParams) {
         // Server initialized successfully
     }
     
@@ -121,10 +196,31 @@ impl LanguageServer for Backend {
         if let Some(change) = params.content_changes.first() {
             self.analyze_document(uri, &change.text, language_id).await;
         }
+    }    async fn shutdown(&self) -> Result<()> {
+        Ok(())
     }
 
-    async fn shutdown(&self) -> Result<()> {
-        Ok(())
+    async fn code_action(&self, params: CodeActionParams) -> Result<Option<CodeActionResponse>> {
+        let mut actions = Vec::new();
+        
+        // Get the document URI and range
+        let uri = params.text_document.uri;
+        let range = params.range;
+        
+        // Check each diagnostic in the context
+        for diagnostic in params.context.diagnostics {
+            if diagnostic.source.as_deref() == Some("stylesense") {
+                if let Some(action) = self.create_fix_action(&uri, &diagnostic).await {
+                    actions.push(CodeActionOrCommand::CodeAction(action));
+                }
+            }
+        }
+        
+        if actions.is_empty() {
+            Ok(None)
+        } else {
+            Ok(Some(actions))
+        }
     }
 }
 
