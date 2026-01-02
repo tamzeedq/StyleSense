@@ -1,26 +1,59 @@
-// The module 'vscode' contains the VS Code extensibility API
-// Import the module and reference it with the alias vscode in your code below
-import * as vscode from 'vscode';
+import * as path from 'path';
+import * as fs from 'fs';
+import {
+    ExtensionContext,
+    window
+} from 'vscode';
 
-// This method is called when your extension is activated
-// Your extension is activated the very first time the command is executed
-export function activate(context: vscode.ExtensionContext) {
+import { 
+    LanguageClient, 
+    LanguageClientOptions, 
+    ServerOptions 
+} from 'vscode-languageclient/node';
 
-	// Use the console to output diagnostic information (console.log) and errors (console.error)
-	// This line of code will only be executed once when your extension is activated
-	console.log('Congratulations, your extension "stylesense" is now active!');
+// Single instance of the language client
+let client: LanguageClient;
 
-	// The command has been defined in the package.json file
-	// Now provide the implementation of the command with registerCommand
-	// The commandId parameter must match the command field in package.json
-	const disposable = vscode.commands.registerCommand('stylesense.helloWorld', () => {
-		// The code you place here will be executed every time your command is executed
-		// Display a message box to the user
-		vscode.window.showInformationMessage('Hello World from StyleSense!');
-	});
-
-	context.subscriptions.push(disposable);
+export function activate(context: ExtensionContext) {
+    const serverCommand = path.join(__dirname, '..', '..', '..', 'lsp', 'target', 'debug', 'lsp.exe');
+    
+    // Check if the server executable exists
+    if (!fs.existsSync(serverCommand)) {
+        const errorMsg = `LSP server executable not found at: ${serverCommand}`;
+        window.showErrorMessage(`StyleSense: ${errorMsg}`);
+        return;
+    }
+    
+    const serverOptions: ServerOptions = {
+        command: serverCommand,
+        options: { shell: true }
+    };
+    
+    const clientOptions: LanguageClientOptions = {
+        documentSelector: [{ scheme: 'file', language: 'cpp' }, { scheme: 'file', language: 'c' }],
+    };
+    
+    const outputChannel = window.createOutputChannel('StyleSense Language Server');
+    
+    client = new LanguageClient(
+        'stylesense',
+        'StyleSense',
+        serverOptions,
+        {
+            ...clientOptions,
+            outputChannel: outputChannel
+        }
+    );
+    
+    client.start().then(() => {
+        // Success - no need for notification in production
+    }).catch((error) => {
+        window.showErrorMessage(`StyleSense: Failed to start LSP server - ${error.message}`);
+    });
+    
+    context.subscriptions.push(client);
 }
 
-// This method is called when your extension is deactivated
-export function deactivate() {}
+export function deactivate(): Thenable<void> | undefined {
+    return client ? client.stop() : undefined;
+}

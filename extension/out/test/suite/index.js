@@ -32,43 +32,43 @@ var __importStar = (this && this.__importStar) || (function () {
         return result;
     };
 })();
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.activate = activate;
-exports.deactivate = deactivate;
+exports.run = run;
 const path = __importStar(require("path"));
-const fs = __importStar(require("fs"));
-const vscode_1 = require("vscode");
-const node_1 = require("vscode-languageclient/node");
-// Single instance of the language client
-let client;
-function activate(context) {
-    const serverCommand = path.join(__dirname, '..', '..', '..', 'lsp', 'target', 'debug', 'lsp.exe');
-    // Check if the server executable exists
-    if (!fs.existsSync(serverCommand)) {
-        const errorMsg = `LSP server executable not found at: ${serverCommand}`;
-        vscode_1.window.showErrorMessage(`StyleSense: ${errorMsg}`);
-        return;
-    }
-    const serverOptions = {
-        command: serverCommand,
-        options: { shell: true }
-    };
-    const clientOptions = {
-        documentSelector: [{ scheme: 'file', language: 'cpp' }, { scheme: 'file', language: 'c' }],
-    };
-    const outputChannel = vscode_1.window.createOutputChannel('StyleSense Language Server');
-    client = new node_1.LanguageClient('stylesense', 'StyleSense', serverOptions, {
-        ...clientOptions,
-        outputChannel: outputChannel
+const mocha_1 = __importDefault(require("mocha"));
+const glob_1 = __importDefault(require("glob"));
+function run() {
+    // Create the mocha test
+    const mocha = new mocha_1.default({
+        ui: 'tdd',
+        color: true
     });
-    client.start().then(() => {
-        // Success - no need for notification in production
-    }).catch((error) => {
-        vscode_1.window.showErrorMessage(`StyleSense: Failed to start LSP server - ${error.message}`);
+    const testsRoot = path.resolve(__dirname, '..');
+    return new Promise((resolve, reject) => {
+        (0, glob_1.default)('**/**.test.js', { cwd: testsRoot }, (err, files) => {
+            if (err) {
+                return reject(err);
+            }
+            // Add files to the test suite
+            files.forEach((f) => mocha.addFile(path.resolve(testsRoot, f)));
+            try {
+                // Run the mocha test
+                mocha.run((failures) => {
+                    if (failures > 0) {
+                        reject(new Error(`${failures} tests failed.`));
+                    }
+                    else {
+                        resolve();
+                    }
+                });
+            }
+            catch (err) {
+                reject(err);
+            }
+        });
     });
-    context.subscriptions.push(client);
 }
-function deactivate() {
-    return client ? client.stop() : undefined;
-}
-//# sourceMappingURL=extension.js.map
+//# sourceMappingURL=index.js.map
